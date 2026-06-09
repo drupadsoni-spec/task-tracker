@@ -1,5 +1,5 @@
-import { and, eq, isNull, lte, or, sql } from "drizzle-orm";
-import { format } from "date-fns";
+import { and, eq, gte, isNull, lte, or, sql } from "drizzle-orm";
+import { addDays, format } from "date-fns";
 import { getDb } from "@/lib/db";
 import {
   labels,
@@ -32,7 +32,8 @@ export type TaskFilters = {
   projectId?: number;
   status?: TaskStatus;
   labelId?: number;
-  due?: "today" | "overdue";
+  due?: "today" | "overdue" | "upcoming";
+  q?: string;
   topLevelOnly?: boolean;
   parentTaskId?: number;
 };
@@ -100,12 +101,29 @@ export function listTasks(filters: TaskFilters = {}): TaskWithMeta[] {
     conditions.push(sql`${tasks.status} != 'done'`);
     conditions.push(sql`${tasks.dueDate} is not null`);
   }
+  if (filters.due === "upcoming") {
+    const tomorrow = format(addDays(new Date(), 1), "yyyy-MM-dd");
+    const weekAhead = format(addDays(new Date(), 7), "yyyy-MM-dd");
+    conditions.push(gte(tasks.dueDate, tomorrow));
+    conditions.push(lte(tasks.dueDate, weekAhead));
+    conditions.push(sql`${tasks.status} != 'done'`);
+    conditions.push(sql`${tasks.dueDate} is not null`);
+  }
 
   if (conditions.length > 0) {
     query = query.where(and(...conditions));
   }
 
   let results = query.orderBy(tasks.sortOrder, tasks.createdAt).all();
+
+  if (filters.q) {
+    const needle = filters.q.toLowerCase();
+    results = results.filter(
+      (t) =>
+        t.title.toLowerCase().includes(needle) ||
+        (t.description?.toLowerCase().includes(needle) ?? false)
+    );
+  }
 
   if (filters.labelId !== undefined) {
     const taskIdsWithLabel = db

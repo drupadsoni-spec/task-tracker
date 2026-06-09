@@ -23,7 +23,27 @@ export function TaskListView({ projectId, tasks, onRefresh }: TaskListViewProps)
 
   return (
     <>
-      <div className="overflow-hidden rounded-xl border border-border">
+      <div className="space-y-2 md:hidden">
+        {tasks.length === 0 && (
+          <p className="py-8 text-center text-muted-foreground">No tasks yet</p>
+        )}
+        {tasks.map((task) => (
+          <button
+            key={task.id}
+            type="button"
+            onClick={() => setSelectedTaskId(task.id)}
+            className="w-full rounded-lg border border-border p-3 text-left hover:bg-muted/50"
+          >
+            <p className="font-medium">{task.title}</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {statusLabel[task.status]}
+              {task.dueDate ? ` · ${format(parseISO(task.dueDate), "MMM d")}` : ""}
+            </p>
+          </button>
+        ))}
+      </div>
+
+      <div className="hidden overflow-hidden rounded-xl border border-border md:block">
         <table className="w-full text-sm">
           <thead className="bg-muted/50">
             <tr>

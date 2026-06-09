@@ -5,11 +5,14 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   CalendarDays,
+  CalendarRange,
   FolderKanban,
   Tags,
   Menu,
   X,
   CheckSquare,
+  Search,
+  Inbox,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -17,6 +20,7 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/today", label: "Today", icon: CalendarDays },
+  { href: "/upcoming", label: "Upcoming", icon: CalendarRange },
   { href: "/projects", label: "Projects", icon: FolderKanban },
   { href: "/labels", label: "Labels", icon: Tags },
 ];
@@ -50,7 +54,11 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
-export function Sidebar() {
+type SidebarProps = {
+  onOpenSearch?: () => void;
+};
+
+export function Sidebar({ onOpenSearch }: SidebarProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -87,6 +95,28 @@ export function Sidebar() {
         </div>
         <nav className="flex flex-1 flex-col gap-1">
           <NavLinks onNavigate={() => setOpen(false)} />
+          {onOpenSearch && (
+            <button
+              type="button"
+              onClick={() => {
+                onOpenSearch();
+                setOpen(false);
+              }}
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground/80 transition-colors hover:bg-white/10 hover:text-sidebar-foreground"
+            >
+              <Search className="h-4 w-4" />
+              Search
+              <kbd className="ml-auto rounded bg-white/10 px-1.5 text-[10px]">⌘K</kbd>
+            </button>
+          )}
+          <Link
+            href="/inbox"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground/80 transition-colors hover:bg-white/10 hover:text-sidebar-foreground"
+          >
+            <Inbox className="h-4 w-4" />
+            Inbox
+          </Link>
         </nav>
         <div className="mt-auto px-3 pt-6 text-xs text-sidebar-foreground/40">
           <p>Designed by Drupad Soni</p>
@@ -97,10 +127,16 @@ export function Sidebar() {
   );
 }
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({
+  children,
+  onOpenSearch,
+}: {
+  children: React.ReactNode;
+  onOpenSearch?: () => void;
+}) {
   return (
     <div className="min-h-screen lg:pl-64">
-      <Sidebar />
+      <Sidebar onOpenSearch={onOpenSearch} />
       <main className="px-4 py-16 lg:px-8 lg:py-8">{children}</main>
     </div>
   );

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { ProjectDetail } from "@/components/projects/project-detail";
 import { getDb } from "@/lib/db";
@@ -16,5 +17,9 @@ export default async function ProjectPage({ params }: PageProps) {
 
   const tasks = listTasks({ projectId: project.id, topLevelOnly: true });
 
-  return <ProjectDetail project={project} initialTasks={tasks} />;
+  return (
+    <Suspense fallback={<p className="text-muted-foreground">Loading project…</p>}>
+      <ProjectDetail project={project} initialTasks={tasks} />
+    </Suspense>
+  );
 }

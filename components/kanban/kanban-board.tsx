@@ -5,6 +5,7 @@ import {
   DndContext,
   DragOverlay,
   PointerSensor,
+  TouchSensor,
   closestCorners,
   useSensor,
   useSensors,
@@ -25,16 +26,26 @@ import type { TaskStatus } from "@/lib/db/schema";
 type KanbanBoardProps = {
   projectId: number;
   initialTasks: TaskWithMeta[];
+  externalSelectedTaskId?: number | null;
+  onExternalTaskClose?: () => void;
 };
 
-export function KanbanBoard({ projectId, initialTasks }: KanbanBoardProps) {
+export function KanbanBoard({
+  projectId,
+  initialTasks,
+  externalSelectedTaskId,
+  onExternalTaskClose,
+}: KanbanBoardProps) {
   const [tasks, setTasks] = useState(initialTasks);
   const [activeTask, setActiveTask] = useState<TaskWithMeta | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [addingToColumn, setAddingToColumn] = useState<TaskStatus | null>(null);
   const [newTitle, setNewTitle] = useState("");
 
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } })
+  );
 
   const refreshTasks = useCallback(async () => {
     const res = await fetch(`/api/tasks?projectId=${projectId}&topLevelOnly=true`);
@@ -44,6 +55,10 @@ export function KanbanBoard({ projectId, initialTasks }: KanbanBoardProps) {
   useEffect(() => {
     setTasks(initialTasks);
   }, [initialTasks]);
+
+  useEffect(() => {
+    if (externalSelectedTaskId) setSelectedTaskId(externalSelectedTaskId);
+  }, [externalSelectedTaskId]);
 
   const tasksByStatus = STATUS_COLUMNS.reduce(
     (acc, col) => {
@@ -195,7 +210,10 @@ export function KanbanBoard({ projectId, initialTasks }: KanbanBoardProps) {
         <TaskPanel
           taskId={selectedTaskId}
           projectId={projectId}
-          onClose={() => setSelectedTaskId(null)}
+          onClose={() => {
+            setSelectedTaskId(null);
+            onExternalTaskClose?.();
+          }}
           onUpdate={refreshTasks}
         />
       )}

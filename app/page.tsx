@@ -72,7 +72,7 @@ export default function DashboardPage() {
               stats.todayTasks.map((task) => (
                 <Link
                   key={task.id}
-                  href={`/projects/${task.projectId}`}
+                  href={`/projects/${task.projectId}?task=${task.id}`}
                   className="flex items-center justify-between rounded-lg border border-border p-3 hover:bg-muted/50"
                 >
                   <div>
@@ -101,7 +101,7 @@ export default function DashboardPage() {
               stats.overdueTasks.map((task) => (
                 <Link
                   key={task.id}
-                  href={`/projects/${task.projectId}`}
+                  href={`/projects/${task.projectId}?task=${task.id}`}
                   className="flex items-center justify-between rounded-lg border border-border p-3 hover:bg-muted/50"
                 >
                   <div>
@@ -116,6 +116,28 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      {stats.recentTasks.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Recently Updated</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {stats.recentTasks.map((task) => (
+              <Link
+                key={task.id}
+                href={`/projects/${task.projectId}?task=${task.id}`}
+                className="flex items-center justify-between rounded-lg border border-border p-3 hover:bg-muted/50"
+              >
+                <div>
+                  <p className="font-medium">{task.title}</p>
+                  <p className="text-xs text-muted-foreground">{task.projectName}</p>
+                </div>
+              </Link>
+            ))}
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>

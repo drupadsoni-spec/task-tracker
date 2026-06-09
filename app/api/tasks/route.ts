@@ -10,7 +10,8 @@ export async function GET(request: Request) {
     const projectId = searchParams.get("projectId");
     const status = searchParams.get("status") as TaskStatus | null;
     const labelId = searchParams.get("labelId");
-    const due = searchParams.get("due") as "today" | "overdue" | null;
+    const due = searchParams.get("due") as "today" | "overdue" | "upcoming" | null;
+    const q = searchParams.get("q") ?? undefined;
     const topLevelOnly = searchParams.get("topLevelOnly") !== "false";
     const parentTaskId = searchParams.get("parentTaskId");
 
@@ -19,6 +20,7 @@ export async function GET(request: Request) {
       status: status ?? undefined,
       labelId: labelId ? Number(labelId) : undefined,
       due: due ?? undefined,
+      q,
       topLevelOnly: parentTaskId ? false : topLevelOnly,
       parentTaskId: parentTaskId ? Number(parentTaskId) : undefined,
     });

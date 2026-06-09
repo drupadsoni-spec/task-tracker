@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { SubtaskList } from "@/components/tasks/subtask-list";
 import { RecurrencePicker } from "@/components/tasks/recurrence-picker";
+import { DueDatePicker } from "@/components/tasks/due-date-picker";
 import { PRIORITY_OPTIONS, STATUS_COLUMNS } from "@/lib/task-constants";
 import { parseRecurrenceRule } from "@/lib/services/recurrence";
 import type { Label as LabelType, RecurrenceRule } from "@/lib/db/schema";
@@ -166,12 +167,7 @@ export function TaskPanel({ taskId, projectId, onClose, onUpdate }: TaskPanelPro
 
           <div>
             <Label>Due date</Label>
-            <Input
-              type="date"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              className="mt-1"
-            />
+            <DueDatePicker value={dueDate} onChange={setDueDate} className="mt-1" />
           </div>
 
           <div>

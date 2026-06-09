@@ -155,7 +155,7 @@ export function LabelManager() {
               filteredTasks.map((task) => (
                 <a
                   key={task.id}
-                  href={`/projects/${task.projectId}`}
+                  href={`/projects/${task.projectId}?task=${task.id}`}
                   className="block rounded-lg border border-border p-3 hover:bg-muted/50"
                 >
                   <p className="font-medium">{task.title}</p>

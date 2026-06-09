@@ -24,7 +24,9 @@ export function getDashboardStats() {
     .where(eq(projects.archived, false))
     .get();
 
-  const recentTasks = listTasks({ topLevelOnly: true }).slice(0, 5);
+  const recentTasks = listTasks({ topLevelOnly: true })
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+    .slice(0, 5);
 
   return {
     todayCount: todayTasks.length,

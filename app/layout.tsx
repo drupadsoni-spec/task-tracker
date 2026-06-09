@@ -14,8 +14,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Task Tracker",
-  description: "Personal task and project management",
+  title: "Task Tracker — Local-first personal PM",
+  description:
+    "Kanban boards, labels, subtasks, and recurring tasks. Inspired by Google Tasks and Todoist. 100% local SQLite.",
+  openGraph: {
+    title: "Task Tracker",
+    description: "Local-first personal task and project manager",
+    url: "https://github.com/drupadsoni-spec/task-tracker",
+    siteName: "Task Tracker",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
